@@ -379,7 +379,7 @@ validation_generator = train_datagen.flow_from_directory(
         target_size=(28,28),  # all images will be resized to 28x28 batch_size=1,
         class_mode='sparse')
 ```
-After training the model using model.fit() method, the training accuracy obtained after 18 epochs is 98.43%.
+After training the model using model.fit() method, the training accuracy obtained after 25 epochs is 96%.
 
 #### Predicting the plate number
 ```
@@ -421,8 +421,8 @@ Optimal parameters:
 3. Optimizer = Adam
 
 ## Result
-- Accuracy obtained using Contour method is about 60.24%.
-- Accuracy obtained by using YOLOv3 is about 74.10%.
+- Accuracy obtained using Contour method is about 96.24%.
+- Accuracy obtained by using YOLOv3 is about 70.10%.
 ### Optimizing the result
 - Since the individual accuracies are not that great, we created a hybrid model of both the license detection methods.
 - The idea behind this is to send the image initially to YOLOv3 method. If the method does not return any image as license plate, the image is passed into the Contour method. The accuracy obtained using this hybrid approach is about ```90.96%```.
