@@ -10,12 +10,6 @@ To predict the license plate number, the following things need to be done:
 2. After extracting the license plate, individual characters need to be seperated and segregated using character segmentation techniques like finding rectangular contours.
 3. The last phase is performing character recognition, where the segmented characters are recognized using deep learning classifiers. We used CNN in this project as CNNs work the best with images.
 
-## Dataset
-The following datasets have been used for different purposes:
-1. **For license plate detection (YOLO)**: The dataset contains approximately 4000 annotated images of cars with license plates. The dataset can be found and downloaded from here https://data.mendeley.com/datasets/nx9xbs4rgx/2
-2. **For character recognition**: The dataset has about 1000 images of digits from 0-9 and alphabets from A-Z. You can find the dataset here [Character Dataset](data.zip)
-3. **For testing the whole model**: The dataset contains about 200 images of cars with license plates. You can find the dataset here https://drive.google.com/file/d/1QAFdt5Mq8X6fZud7kdsjaJbJfSXrsFse/view?usp=sharing
-
 ## Technologies/Languages Used
 - **Python**: This is the most sought language for implementing AI projects. The version used is python 3.6 here.
 - **IDE**: We used Jupter Notebook for this project.
@@ -65,8 +59,6 @@ The above code performs the following functions:
 - **Noise Removal**: Image noises are distortion in the image that arises due to fault in camera or result of poor visibility due to changing weather conditions. Noises are also the random variation in the intensity levels of the pixels. Noise can be of various types like Gaussian noise, Salt and pepper noise. We used iterative bilateral filter for noise removal. It provides the mechanism for noise reduction while preserving edges more effectively than median filter.
 - **Binarization**: Binarization is the process of converting an image into an image with two pixels value only i.e. containing white and black pixels. Performing binarization process before detecting and extracting license plate from the image will make the task of detecting license plate easier as edges will be more clearly in binary image.
 
-![image](https://user-images.githubusercontent.com/85444229/121041204-2acaf080-c7d0-11eb-97fd-02cf776069cf.png)
-
 After preprocessing, our image is ready to find contours.
 ```
 # Find contours based on Edges
@@ -91,11 +83,6 @@ if NumberPlateCnt is not None:
 ```
 Initially, all contours are found by using ```cv2.findContours()``` methods. All the contours with area less than 30 are discarded and the remaining contours are send for further processing. Each contour is approximated to form a polygon and if a contour is quadrilateral in shape (has 4 sides), then it is predicted to be the number plate and the contours are drawn using ```cv2.drawContours()``` method.
 
-![image](https://user-images.githubusercontent.com/85444229/121042882-bbee9700-c7d1-11eb-8105-1a351f9b5b8e.png)
-
-If the extracted license plate is tilted, it might face problems in the image segmentation phase. So, we need to straighten the image, if titled.
-
-![image](https://user-images.githubusercontent.com/85444229/121043704-7ed6d480-c7d2-11eb-9b0b-446063ab8e19.png)
 
 Let (left_x, left_y) and (right_x, right_y) be the bottom-left and bottom-right coordinates of the predicted license plate respectively. Then the image rotation can be performed as:
 ```
@@ -121,12 +108,11 @@ plt.show()
 ```
 In this, the angle of rotation is found by finding the sin of theta, from which the angle can be found easily. After that, the image is rotated according the the angle obtained.
 
-![image](https://user-images.githubusercontent.com/85444229/121045588-6b783900-c7d3-11eb-91b8-3c66719dfe40.png)
 
 #### 2. Plate detection using YOLOv3
 We trained YOLOv3 on custom dataset for detection of license plate as mentioned in the 'Dataset' section.
 For this, darknet was installed and set up in the system. Using YOLOv3 config files, we trained our dataset on Git which returned ‘plates.weights’ file containing the weights obtained after training. The .weights file is then imported in the program and used to detect plates. The repository for installing and using darknet can be found here https://github.com/pjreddie/darknet.
-Due to constraints on size of file on github, we uploaded the ```lapi.weights``` file along with ```classes.names``` and ```darknet-yolov3.cfg``` files on the following link: https://drive.google.com/file/d/1cktcL1TXXRJ5o6CxzIuR08hPEWbb8Kkx/view?usp=sharing
+Due to constraints on size of file on github, we uploaded the ```lapi.weights``` file along with ```classes.names``` and ```darknet-yolov3.cfg``` files on the following link: https://drive.google.com/drive/u/0/folders/1_On-W_sEw7cMaKBpq3PotUMq23gdxhfg
 
 Initially, import all the necessary files and set up the model in the following way:
 ```
@@ -230,7 +216,6 @@ outs = net.forward(getOutputsNames(net))
 # Remove the bounding boxes with low confidence
 cropped = postprocess(frame, outs)
 ```
-![image](https://user-images.githubusercontent.com/85444229/121055679-193b1600-c7db-11eb-9f1b-512e3883ee0f.png)
 
 In the above image, bounding box is drawn along with the probability/confidence of the object being a license plate. In this case, the confidence is 0.98.
 
@@ -348,9 +333,6 @@ In the above function, we will be applying some more image processing to extract
   1. Width in the range 0, (length of the pic)/(number of characters) and,
   2. Length in a range of (width of the pic)/2, 4*(width of the pic)/5. After this step, we should have all the characters extracted as binary images.
 
-![image](https://user-images.githubusercontent.com/85444229/121058623-2ad1ed00-c7de-11eb-9fbc-df103300bfa8.png)
-
-![image](https://user-images.githubusercontent.com/85444229/121058686-40dfad80-c7de-11eb-9242-800cd47b3eb0.png)
 
 ### Character Recognition
 Since the data is all clean and ready, now it’s time do create a Neural Network that will be intelligent enough to recognize the characters after training. In this project, we used CNN model for character recognition.
@@ -368,7 +350,6 @@ model.add(Dense(36, activation='softmax'))
 
 model.compile(loss='sparse_categorical_crossentropy', optimizer=optimizers.Adam(lr=0.0001), metrics=[custom_f1score])
 ```
-![image](https://user-images.githubusercontent.com/85444229/121059410-117d7080-c7df-11eb-9ff5-b1249c23f8e9.png)
 
 - To keep the model simple, we’ll start by creating a sequential object.
 - We will use 4 convolutional layers with 'Relu' as the activation function.
@@ -399,7 +380,6 @@ validation_generator = train_datagen.flow_from_directory(
         class_mode='sparse')
 ```
 After training the model using model.fit() method, the training accuracy obtained after 18 epochs is 98.43%.
-![image](https://user-images.githubusercontent.com/85444229/121062049-3e7f5280-c7e2-11eb-9ce7-80cf293726fb.png)
 
 #### Predicting the plate number
 ```
@@ -430,13 +410,10 @@ def show_results():
     return plate_number
 ```
 
-![image](https://user-images.githubusercontent.com/85444229/121062438-b3eb2300-c7e2-11eb-9ac9-bc2dffc0c6be.png)
-
 ## Hyperparameter Tuning
 Hyperparameter optimization or tuning is the problem of choosing a set of optimal hyperparameters for a learning algorithm. A hyperparameter is a parameter whose value is used to control the learning process.
 We performed hyperparameter tuning in the CNN model on the parameters dropout rate, optimizer and learning rate using Grid Search.
 
-![image](https://user-images.githubusercontent.com/85444229/121062753-1e03c800-c7e3-11eb-89c3-d1453b65869c.png)
 
 Optimal parameters:
 1. Dropout rate = 0.4
